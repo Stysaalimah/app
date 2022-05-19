@@ -1,35 +1,25 @@
-@extends('layouts.dashboard')
+@extends('layouts.app')
 
-@section('title', 'Friends')
+@section('title', 'Groups')
 
 @section('content')
-    <form action="/friends" method="POST">
-        @csrf
-        <div class="form-group">
-            <label for="exampleInputEmail1" class="form-label">Nama</label>
-            <input type="text" class="form-control" id="exampleInputEmail1" name="nama" aria-describedby="emailHelp"
-                value="{{ old('nama') }}">
-            @error('nama')
-                <div class="alert alert-danger">{{ $message }}</div>
-            @enderror
-        </div>
-        <div class="form-group">
-            <label for="exampleInputPassword1" class="form-label">No Telpon</label>
-            <input type="number" class="form-control" name="no_tlp" id="exampleInputPassword1" value="{{ old('no_tlp') }}">
-            @error('no_tlp')
-                <div class="alert alert-danger">{{ $message }}</div>
-            @enderror
-        </div>
-        <div class="form-group">
-            <label for="exampleInputPassword1" class="form-label">Alamat</label>
-            <input type="text" class="form-control" name="alamat" id="exampleInputPassword1"
-                value="{{ old('alamat') }}">
-            @error('alamat')
-                <div class="alert alert-danger">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+<form action ="/groups" method="POST">
+  @csrf
+  <div class="mb-3">
+    <label for="exampleInputEmail1" class="form-label">Nama</label>
+    <input type="text" class="form-control" id="exampleInputEmail1" name="name" aria-describedby="emailHelp" value="{{ old('nama') }}">
+    @error('name')
+    <div class="alert alert-danger">{{ $message }}</div>
+    @enderror
+  </div>
+  <div class="mb-3">
+    <label for="exampleInputPassword1" class="form-label">Description </label>
+    <input type="text" class="form-control" name="description" id="exampleInputPassword1" value="{{ old('alamat') }}">
+    @error('description')
+    <div class="alert alert-danger">{{ $message }}</div>
+    @enderror
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
 
 @endsection

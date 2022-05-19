@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Groups;
-use App\Models\History;
-use App\Models\Friends;
 use Illuminate\Http\Request;
 
 class GroupsController extends Controller
@@ -16,8 +14,7 @@ class GroupsController extends Controller
      */
     public function index()
     {
-        $groups = \App\Models\Groups::OrderBy('id', 'desc')->paginate(3);
-
+        $groups = Groups::orderBy('id','desc')->paginate(3);
         return view('groups.index', compact('groups'));
     }
 
@@ -28,7 +25,7 @@ class GroupsController extends Controller
      */
     public function create()
     {
-        return view('groups.create');
+     return view ('groups.create');
     }
 
     /**
@@ -39,18 +36,20 @@ class GroupsController extends Controller
      */
     public function store(Request $request)
     {
+
         $request->validate([
-            'name' => 'required|unique:groups|max:255',
+            'name' => 'required|max:255',
             'description' => 'required',
         ]);
  
-        $groups = new \App\Models\groups;
+        $groups = new Groups;
  
         $groups->name = $request->name;
         $groups->description = $request->description;
  
         $groups->save();
-        return redirect ('/groups');
+
+        return redirect('/groups');
     }
 
     /**
@@ -61,10 +60,9 @@ class GroupsController extends Controller
      */
     public function show($id)
     {
-        $groups = \App\Models\Groups::where('id', $id)->first();
-
-        $count =  \App\Models\Friends::where('groups_id', '=', $groups->id)->count();
-        return view('groups.show', ['group' => $groups, 'count' => $count]);
+        
+        $group = Groups::where('id', $id)->first();
+        return view('groups.show', ['group'=> $group]);
     }
 
     /**
@@ -74,9 +72,9 @@ class GroupsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
-    {
-        $groups = \App\Models\Groups::where('id', $id)->first();
-        return view('groups.edit', ['group' => $groups]);
+    { 
+        $groups = Groups::where('id', $id)->first();
+        return view('groups.edit', ['group'=> $groups]);
     }
 
     /**
@@ -88,9 +86,14 @@ class GroupsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        \App\Models\groups::whereId($id)->update([
+     $request->validate([
+            'name' => 'required|max:255',
+            'description' => 'required',
+        ]);
+ 
+        groups::find($id)->update([
             'name' => $request->name,
-            'description' => $request->description,
+            'description' => $request->description
         ]);
 
         return redirect('/groups');
@@ -104,63 +107,8 @@ class GroupsController extends Controller
      */
     public function destroy($id)
     {
-        \App\Models\Groups::find($id)->delete();
+    
+        Groups::find($id)->delete();
         return redirect('/groups');
-    }
-
-    public function addmember($id)
-    {
-        $friend = \App\Models\Friends::where('groups_id', '=', 0)->get();
-        $groups = \App\Models\Groups::where('id', $id)->first();
-
-        
-        return view('groups.addmember', ['group' => $groups, 'friend' => $friend]);
-    }
-
-    public function updateaddmember(Request $request, $id)
-    {
-        $friend =  \App\Models\Friends::where('id', $request->friend_id)->first();
-        \App\Models\Friends::whereId($friend->id)->update([
-            'groups_id' => $id
-
-        ]);
-        $history = new History();
-        // dd($request->all());      
-        $history->friends_id = $request->friend_id;
-        $history->groups_id = $id;
-        $history->details = 'masuk';
-        $history->save();
-
-        $group = Groups::find($id);
-        $group->masuk += 1;
-        $group->save();
-
-     
-
-        return redirect('/groups');
-    }
-
-    public function deleteaddmember(Request $request, $id)
-    {
-   
-
-        $friend = Friends::find($id);
-        \App\Models\Friends::whereId($id)->update([
-            'groups_id' => 0
-        ]);
-        $history = new History();
-        // dd($request->all());      
-        $history->friends_id = $id;
-        $history->groups_id = $friend->groups_id;
-        $history->details = 'keluar';
-        $history->save();
-
-        $group = Groups::find($id);
-        // dd($group);
-        $group->keluar = 1;
-        $group->save();
-        return redirect('/groups');
-       
-
     }
 }

@@ -1,6 +1,7 @@
 <?php
 use App\Http\Controllers\GroupsController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CobaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,20 +13,28 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('', 'App\Http\Controllers\CobaController@index');
-//Route::get('/friends', 'App\Http\Controllers\CobaController@index');
-//Route::get('/friends/create', 'App\Http\Controllers\CobaController@create');
-//Route::post('/friends', 'App\Http\Controllers\CobaController@store');
-//Route::get('/friends/{id}', 'App\Http\Controllers\CobaController@show');
-//Route::get('/friends/{id}/edit', 'App\Http\Controllers\CobaController@edit');
-//Route::put('/friends/{id}', 'App\Http\Controllers\CobaController@update');
-//Route::delete('/friends/{id}', 'App\Http\Controllers\CobaController@destroy');
 
-//Route::resource('friends', 'App\Http\Controllers\CobaController');
+/*Route::get('/', function () {
+    return view('welcome');
+});
+Route::get('/coba', function () {
+    return view('coba');
+});
+Route::get('/coba/{no}', [CobaController::class, 'coba']); 
+Route::get('/test', [CobaController::class, 'index']); 
+Route::get('/test/{ke}', [CobaController::class, 'urutan']);
+*/
+
+Route::get('', [CobaController::class, 'index']);
+// Route::get('/friends', [CobaController::class, 'index']);
+// Route::get('/friends/create', [CobaController::class, 'create']);
+// Route::post('/friends', [CobaController::class, 'store']);
+// Route::get('/friends/{id}', [CobaController::class, 'show']);
+// Route::get('/friends/{id}/edit', [CobaController::class, 'edit']);
+// Route::put('/friends/{id}', [CobaController::class, 'update']);
+// Route::delete('/friends/{id}', [CobaController::class, 'destroy']);
+
 Route::resources([
-    'friends' => 'App\Http\Controllers\CobaController',
-    'groups' => 'App\Http\Controllers\GroupsController',
+    'friends' => CobaController::class,
+    'groups' => GroupsController::class,
 ]);
-Route::get('/groups/addmember/{group}', 'App\Http\Controllers\GroupsController@addmember');
-Route::put('/groups/addmember/{group}', 'App\Http\Controllers\GroupsController@updateaddmember');
-Route::put('/groups/deleteaddmember/{group}', 'App\Http\Controllers\GroupsController@deleteaddmember');
