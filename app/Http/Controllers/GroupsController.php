@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Groups;
 use Illuminate\Http\Request;
+use App\Models\Groups;
+use App\Models\Friends;
 
 class GroupsController extends Controller
 {
@@ -25,7 +26,7 @@ class GroupsController extends Controller
      */
     public function create()
     {
-     return view ('groups.create');
+        return view('groups.create');
     }
 
     /**
@@ -36,20 +37,20 @@ class GroupsController extends Controller
      */
     public function store(Request $request)
     {
+      // Validate the request...
+      $request->validate([
+        'name' => 'required|unique:groups|max:255',
+        'description' => 'required',
+    ]);
 
-        $request->validate([
-            'name' => 'required|max:255',
-            'description' => 'required',
-        ]);
- 
-        $groups = new Groups;
- 
-        $groups->name = $request->name;
-        $groups->description = $request->description;
- 
-        $groups->save();
+    $groups = new groups;
 
-        return redirect('/groups');
+    $groups->name = $request->name;
+    $groups->description = $request->description;
+
+    $groups->save();
+
+    return redirect('/groups');
     }
 
     /**
@@ -60,9 +61,8 @@ class GroupsController extends Controller
      */
     public function show($id)
     {
-        
-        $group = Groups::where('id', $id)->first();
-        return view('groups.show', ['group'=> $group]);
+        $groups = groups::where('id', $id)->first();
+        return view('groups.show',['groups' => $groups]);
     }
 
     /**
@@ -72,9 +72,9 @@ class GroupsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
-    { 
-        $groups = Groups::where('id', $id)->first();
-        return view('groups.edit', ['group'=> $groups]);
+    {
+        $groups = groups::where('id', $id)->first();
+        return view('groups.edit',['groups' => $groups]);
     }
 
     /**
@@ -86,16 +86,16 @@ class GroupsController extends Controller
      */
     public function update(Request $request, $id)
     {
-     $request->validate([
-            'name' => 'required|max:255',
+         // Validate the request...
+         $request->validate([
+            'name' => 'required|unique:groups|max:255',
             'description' => 'required',
         ]);
- 
+        
         groups::find($id)->update([
             'name' => $request->name,
             'description' => $request->description
         ]);
-
         return redirect('/groups');
     }
 
@@ -107,8 +107,32 @@ class GroupsController extends Controller
      */
     public function destroy($id)
     {
-    
-        Groups::find($id)->delete();
+        groups::find($id)->delete();
         return redirect('/groups');
     }
+
+    public function addmember($id)
+    {
+        $friend = Friends::where('groups_id','=', 0)->get();
+        $groups = Groups::where('id', $id)->first();
+        return view('groups.addmember',['group' => $groups, 'friends' => $friend]);
+    }
+
+    public function updateaddmember(Request $request, $id)
+    {
+        $friend = Friends::where('id', $request->friend_id)->first();
+        Friends::find($id)->update([
+            'groups_id' => $id
+        ]);
+        return redirect('/groups/addmember/' .$id);
+    }
+    public function deleteaddmember(Request $request, $id)
+    {
+        // dd($id);
+        Friends::find($id)->update([
+            'groups_id' => 0
+        ]);
+        return redirect('/groups');
+    }
+
 }
